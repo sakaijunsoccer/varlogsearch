@@ -1,0 +1,76 @@
+{
+	"info": {
+		"_postman_id": "10f1b1cc-cd49-4959-9c41-774328fdc6d4",
+		"name": "varlogsearch",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "7968040"
+	},
+	"item": [
+		{
+			"name": "/api/v1/search",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"filename\": \"keybagd.log\", \"keyword\": \"test\", \"limit\": 5}"
+				},
+				"url": {
+					"raw": "{{base_url}}/api/v1/search?filename=random.log&keywords=test&limit=20",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"api",
+						"v1",
+						"search"
+					],
+					"query": [
+						{
+							"key": "filename",
+							"value": "random.log"
+						},
+						{
+							"key": "keywords",
+							"value": "test"
+						},
+						{
+							"key": "limit",
+							"value": "20"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://0.0.0.0:8080/"
+		}
+	]
+}

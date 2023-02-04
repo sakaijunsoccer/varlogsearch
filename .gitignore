@@ -1,0 +1,11 @@
+# python
+*.pyc
+venv
+.venv
+
+# app
+/logs
+
+# test
+.pytest_cache
+

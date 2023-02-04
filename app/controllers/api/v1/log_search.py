@@ -1,0 +1,67 @@
+import logging
+import os.path
+
+from flask import Blueprint, jsonify, request
+
+from app.models.event_log import EventLogFile
+
+api_v1 = Blueprint("v1", __name__, url_prefix="/api/v1")
+logger = logging.getLogger(__name__)
+DEFAULT_SEARCH_LOG_LINE = 10
+DEFAULT_SEARCH_TIMEOUT = 10
+PATH_VAR_LOGS = "/var/log"
+
+
+@api_v1.route("/search", methods=["GET"])
+def event_search():
+    """Event data
+    ---
+    tags:
+      - Event
+    parameters:
+      - name: filename
+        in: query
+        type: string
+        required: true
+      - name: keywords
+        in: query
+        example: "key1,key2"
+        type: string
+        required: true
+      - name: limit
+        in: query
+        type: integer
+        required: false
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Search data
+        schema:
+          items:
+            $ref: '#/definitions/events'
+    definitions:
+      events:
+        type: array
+        items:
+          type: string
+    """
+    filename = request.args.get("filename")
+    if filename is None or filename == "":
+        return jsonify({"message": "filename is required"}), 400
+    keywords = request.args.get("keywords")
+    if not keywords:
+        return jsonify({"message": "keywords is required"}), 400
+    keywords = keywords.split(",")
+    limit_str = request.args.get("limit")
+    limit = int(limit_str) if limit_str is not None else DEFAULT_SEARCH_LOG_LINE
+
+    full_filepath = os.path.join(PATH_VAR_LOGS, filename)
+    if not os.path.exists(full_filepath):
+        return jsonify({"message": "file does not exist"}), 404
+
+    event_log_file = EventLogFile(full_filepath)
+    match_line = event_log_file.find_event(keywords, limit)
+
+    json_search_result = {"events": match_line}
+    return jsonify(json_search_result)
