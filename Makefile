@@ -12,7 +12,7 @@ run:
 	python main.py
 
 unit:
-	python -m pytest
+	python -m pytest tests/unit
 
 black:
 	black .
@@ -21,8 +21,9 @@ isort:
 	isort .
 
 clean:
+	find . | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf
 	rm logs/*.log
-	rm .pytest_cache
+	rm -rf .pytest_cache
 
 pretty: isort black
 

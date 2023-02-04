@@ -9,6 +9,9 @@ venv
 # test
 .pytest_cache
 
+# Pycharm
+.idea
+
 # misc
 .DS_Store
 

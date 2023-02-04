@@ -7,7 +7,7 @@ from app.controllers.api.v1 import log_search
 from configs import settings
 
 
-def create_app(test_config=None):
+def create_app():
     app = Flask(__name__)
     app.config["SWAGGER"] = {"title": "API"}
     app.register_blueprint(log_search.api_v1)
@@ -29,5 +29,5 @@ def create_app(test_config=None):
         "specs_route": "/docs/api/v1/",
     }
 
-    swagger = Swagger(app, config=swagger_config)
+    Swagger(app, config=swagger_config)
     return app

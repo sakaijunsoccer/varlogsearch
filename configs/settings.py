@@ -1,7 +1,6 @@
 import configparser
-from distutils.util import strtobool
 import os
-
+from distutils.util import strtobool
 
 conf_file_path = "configs/config_dev.ini"
 if os.getenv("ENVIRONMENT") == "prod":

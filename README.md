@@ -4,9 +4,14 @@ API for keyword search of /var/log
 
 ## Quickstart
 
-Assume you have python installed
+#### Install python 
+Install python 3.11.1 from https://www.python.org/downloads/release/python-3111/
+
 #### Install pacakge and initialize app
 ```
+$ pip install pipenv
+$ pipenv --python 3.11.1 install --dev
+$ pipenv shell
 $ make init
 ```
 #### Setup config
@@ -20,7 +25,7 @@ port = 8080
 
 #### Run on local
 ```
-python3 main.py
+python main.py
 ```
 
 ## How to develop
@@ -33,7 +38,7 @@ $ install_dev_package
 #### Make mock log file
 If you want to use your own log, please create it with the following script.
 ```
-python3 scripts/make_log_file.py --help
+python scripts/make_log_file.py --help
 usage: make_log_file.py [-h] [--filesize FILESIZE] [--filename FILENAME] [--keyword KEYWORD]
                         [--occurrences OCCURRENCES]
 
@@ -67,7 +72,7 @@ $ make unit
 
 Run main.py in Pycharm or command line to start the service
 ```commandline
-$ python3 main.py
+$ python main.py
 ```
 
 ## API Docs
