@@ -9,3 +9,6 @@ venv
 # test
 .pytest_cache
 
+# misc
+.DS_Store
+
