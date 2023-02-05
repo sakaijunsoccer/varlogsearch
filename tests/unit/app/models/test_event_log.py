@@ -127,6 +127,19 @@ class TestEventLogFile(unittest.TestCase):
             result,
         )
 
+    def test_find_event_text_search(self):
+        self.write_data("some test 1\nHello. This is text. Bye.\nsome test 3\n")
+        event_log_file = EventLogFile(self.tempfile.name)
+        limit = 100
+        result, is_timeout = event_log_file.find_event("This is text", limit)
+        self.assertFalse(is_timeout)
+        self.assertEqual(
+            [
+                "Hello. This is text. Bye.",
+            ],
+            result,
+        )
+
     def test_find_event_does_not_match(self):
         self.write_data("abc def hij\n")
         event_log_file = EventLogFile(self.tempfile.name)
