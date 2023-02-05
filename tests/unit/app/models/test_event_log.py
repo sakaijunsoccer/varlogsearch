@@ -96,6 +96,17 @@ class TestEventLogFile(unittest.TestCase):
             event_log_file.find_event("test", limit),
         )
 
+    def test_find_event_hit_one_in_multiline(self):
+        self.write_data("some test 1\nsome unique 2\nsome test 3\n")
+        event_log_file = EventLogFile(self.tempfile.name)
+        limit = 100
+        self.assertEqual(
+            [
+                "some unique 2",
+            ],
+            event_log_file.find_event("unique", limit),
+        )
+
     def test_find_event_does_not_match(self):
         self.write_data("abc def hij\n")
         event_log_file = EventLogFile(self.tempfile.name)

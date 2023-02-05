@@ -6,11 +6,11 @@ from flask import Blueprint, jsonify, request
 
 from app.models.event_log import EventLogFile
 
+DEFAULT_SEARCH_LOG_LINE = 10
+PATH_VAR_LOGS = "/var/log"
+
 api_v1 = Blueprint("v1", __name__, url_prefix="/api/v1")
 logger = logging.getLogger(__name__)
-DEFAULT_SEARCH_LOG_LINE = 10
-DEFAULT_SEARCH_TIMEOUT = 10
-PATH_VAR_LOGS = "/var/log"
 
 
 @api_v1.route("/search", methods=["GET"])
@@ -57,7 +57,14 @@ def event_search() -> flask.Response:
     limit_str = request.args.get("limit")
     limit = int(limit_str) if limit_str is not None else DEFAULT_SEARCH_LOG_LINE
 
-    logger.info({"action": "event_search", "filename": filename, "keywrods": keywords, "limit": limit})
+    logger.info(
+        {
+            "action": "event_search",
+            "filename": filename,
+            "keywrods": keywords,
+            "limit": limit,
+        }
+    )
 
     full_filepath = os.path.join(PATH_VAR_LOGS, filename)
     if not os.path.exists(full_filepath):
@@ -65,7 +72,15 @@ def event_search() -> flask.Response:
 
     event_log_file = EventLogFile(full_filepath)
     match_line = event_log_file.find_event(keywords, limit)
-    logger.info({"action": "event_search", "filename": filename, "keywrods": keywords, "limit": limit, "lines": match_line})
+    logger.info(
+        {
+            "action": "event_search",
+            "filename": filename,
+            "keywrods": keywords,
+            "limit": limit,
+            "lines": match_line,
+        }
+    )
 
     json_search_result = {"events": match_line}
     return jsonify(json_search_result)

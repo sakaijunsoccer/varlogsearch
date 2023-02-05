@@ -12,3 +12,4 @@ conf.read(conf_file_path)
 log_file = conf["api"]["log_file"]
 debug = strtobool(conf["api"]["debug"])
 port = int(conf["api"]["port"])
+search_timeout = int(conf["api"]["search_timeout"])

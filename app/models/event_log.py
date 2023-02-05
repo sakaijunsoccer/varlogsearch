@@ -2,12 +2,10 @@ import logging
 import os
 import threading
 
+from configs import settings
 from utils.process import ThreadWithReturnValue
 
-
 DEFAULT_FIND_EVENT_NUM = 10
-DEFAULT_SEARCH_TIMEOUT = 5
-
 
 logger = logging.getLogger(__name__)
 
@@ -23,9 +21,16 @@ class EventLogFile(object):
         with self.lock:
             self.match_line.append(line)
 
-    def find_event(self, keywords: list, limit: int = DEFAULT_FIND_EVENT_NUM, timeout: int = DEFAULT_SEARCH_TIMEOUT) -> list:
+    def find_event(
+        self,
+        keywords: list,
+        limit: int = DEFAULT_FIND_EVENT_NUM,
+        timeout: int = settings.search_timeout,
+    ) -> list:
         self.match_line = []
-        thread_with_return_value = ThreadWithReturnValue(target=self.search_char_from_back, args=(keywords, limit))
+        thread_with_return_value = ThreadWithReturnValue(
+            target=self.search_char_from_back, args=(keywords, limit)
+        )
         thread_with_return_value.start()
         result = thread_with_return_value.join(timeout=timeout)
         if result is None:
