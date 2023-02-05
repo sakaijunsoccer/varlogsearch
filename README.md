@@ -81,6 +81,4 @@ Please check the Swagger URL below for the API.
 http://localhost:8082/docs/api/v1/
 ```
 Example of postman config for using API
-```
-tools/varlogsearch.postman_collection.json
-```
+https://github.com/sakaijunsoccer/varlogsearch/blob/main/tools/varlogsearch.postman_collection.json

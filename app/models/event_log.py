@@ -51,7 +51,7 @@ class EventLogFile(object):
             return False
         return True
 
-    def go_back_one_charactor(self, file: object, back: int = -2) -> bool:
+    def move_back_one_charactor(self, file: object, back: int = -2) -> bool:
         try:
             file.seek(back, os.SEEK_CUR)
         except OSError:
@@ -73,7 +73,7 @@ class EventLogFile(object):
             if not self.go_to_end(file):
                 return self.match_line
             while True:
-                if not self.go_back_one_charactor(file):
+                if not self.move_back_one_charactor(file):
                     if match:
                         self.add_match_line(line)
                     return self.match_line

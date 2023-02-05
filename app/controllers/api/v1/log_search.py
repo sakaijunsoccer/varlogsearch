@@ -61,7 +61,7 @@ def event_search() -> flask.Response:
         {
             "action": "event_search",
             "filename": filename,
-            "keywrods": keywords,
+            "keywords": keywords,
             "limit": limit,
         }
     )
@@ -76,7 +76,7 @@ def event_search() -> flask.Response:
         {
             "action": "event_search",
             "filename": filename,
-            "keywrods": keywords,
+            "keywords": keywords,
             "limit": limit,
             "lines": match_line,
             "timeout": is_timeout,
