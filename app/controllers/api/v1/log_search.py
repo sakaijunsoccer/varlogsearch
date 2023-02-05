@@ -87,4 +87,4 @@ def event_search() -> flask.Response:
     if is_timeout:
         json_search_result['errorMessage'] = 'timeout'
         return jsonify(json_search_result), 400
-    return jsonify(json_search_result), 200
+    return jsonify(json_search_result)

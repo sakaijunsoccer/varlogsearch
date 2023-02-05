@@ -45,8 +45,8 @@ class EventLogFile(object):
 
     def go_to_end(self, file: object) -> None:
         try:
-            file.seek(-1, os.SEEK_END)
-            file.seek(2, os.SEEK_CUR)
+            file.seek(0, os.SEEK_END)
+            file.seek(1, os.SEEK_CUR)
         except OSError:
             return False
         return True
