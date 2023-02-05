@@ -49,10 +49,10 @@ def event_search() -> flask.Response:
     """
     filename = request.args.get("filename")
     if filename is None or filename == "":
-        return jsonify({"message": "filename is required"}), 400
+        return jsonify({"errorMessage": "filename is required"}), 400
     keywords = request.args.get("keywords")
     if not keywords:
-        return jsonify({"message": "keywords is required"}), 400
+        return jsonify({"errorMessage": "keywords is required"}), 400
     keywords = keywords.split(",")
     limit_str = request.args.get("limit")
     limit = int(limit_str) if limit_str is not None else DEFAULT_SEARCH_LOG_LINE
@@ -68,7 +68,7 @@ def event_search() -> flask.Response:
 
     full_filepath = os.path.join(PATH_VAR_LOGS, filename)
     if not os.path.exists(full_filepath):
-        return jsonify({"message": "file does not exist"}), 404
+        return jsonify({"errorMessage": "file does not exist"}), 404
 
     event_log_file = EventLogFile(full_filepath)
     match_line, is_timeout = event_log_file.find_event(keywords, limit)
@@ -85,6 +85,6 @@ def event_search() -> flask.Response:
 
     json_search_result = {"events": match_line}
     if is_timeout:
-        json_search_result['message'] = 'timeout'
+        json_search_result['errorMessage'] = 'timeout'
         return jsonify(json_search_result), 400
     return jsonify(json_search_result), 200
