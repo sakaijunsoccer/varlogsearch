@@ -1,6 +1,7 @@
 import logging
 import os.path
 
+import flask
 from flask import Blueprint, jsonify, request
 
 from app.models.event_log import EventLogFile
@@ -13,7 +14,7 @@ PATH_VAR_LOGS = "/var/log"
 
 
 @api_v1.route("/search", methods=["GET"])
-def event_search():
+def event_search() -> flask.Response:
     """Event data
     ---
     tags:
@@ -56,12 +57,15 @@ def event_search():
     limit_str = request.args.get("limit")
     limit = int(limit_str) if limit_str is not None else DEFAULT_SEARCH_LOG_LINE
 
+    logger.info({"action": "event_search", "filename": filename, "keywrods": keywords, "limit": limit})
+
     full_filepath = os.path.join(PATH_VAR_LOGS, filename)
     if not os.path.exists(full_filepath):
         return jsonify({"message": "file does not exist"}), 404
 
     event_log_file = EventLogFile(full_filepath)
     match_line = event_log_file.find_event(keywords, limit)
+    logger.info({"action": "event_search", "filename": filename, "keywrods": keywords, "limit": limit, "lines": match_line})
 
     json_search_result = {"events": match_line}
     return jsonify(json_search_result)

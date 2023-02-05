@@ -1,18 +1,13 @@
-import logging
-
 from flasgger import Swagger
 from flask import Flask
 
 from app.controllers.api.v1 import log_search
-from configs import settings
 
 
-def create_app():
+def create_app() -> Flask:
     app = Flask(__name__)
     app.config["SWAGGER"] = {"title": "API"}
     app.register_blueprint(log_search.api_v1)
-
-    logging.basicConfig(filename=settings.log_file, level=logging.INFO)
 
     swagger_config = {
         "headers": [],

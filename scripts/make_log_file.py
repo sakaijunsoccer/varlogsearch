@@ -14,12 +14,12 @@ DEFAULT_POSSIBILITY = 10
 
 
 def make_random_log(
-    filename=DEFAULT_LOG_FILENAME,
-    filesize=DEFAULT_FILE_SIZE,
-    keyword=DEFAULT_LOG_KEYWORD,
-    occurrences=DEFAULT_POSSIBILITY,
-    flush_size=100,
-):
+    filename: str = DEFAULT_LOG_FILENAME,
+    filesize: int = DEFAULT_FILE_SIZE,
+    keyword: str = DEFAULT_LOG_KEYWORD,
+    occurrences: int = DEFAULT_POSSIBILITY,
+    flush_size: int = 100,
+) -> None:
     with open(filename, "a") as file:
         while True:
             current_file_size = os.path.getsize(filename)
