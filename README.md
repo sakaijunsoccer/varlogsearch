@@ -1,6 +1,5 @@
 # VarLogSearch
-API for keyword search of /var/log
-
+An API server that returns REST according to the Open API specification. This is a demonstration server with the concept of specifying logs in /var/log and returning log lines found using search keywords in a list starting with the latest.
 
 ## Quickstart
 
@@ -38,7 +37,7 @@ $ install_dev_package
 #### Make mock log file
 If you want to use your own log, please create it with the following script.
 ```
-python scripts/make_log_file.py --help
+$ python scripts/make_log_file.py --help
 usage: make_log_file.py [-h] [--filesize FILESIZE] [--filename FILENAME] [--keyword KEYWORD]
                         [--occurrences OCCURRENCES]
 
