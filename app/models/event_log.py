@@ -26,18 +26,22 @@ class EventLogFile(object):
         keywords: list,
         limit: int = DEFAULT_FIND_EVENT_NUM,
         timeout: int = settings.search_timeout,
-    ) -> list:
+    ) -> (list, bool):
         self.match_line = []
+        is_timeout = False
+
+        # TODO (sakaijunsoccer) Replace professional asyc service such as SQS or celery
         thread_with_return_value = ThreadWithReturnValue(
             target=self.search_char_from_back, args=(keywords, limit)
         )
         thread_with_return_value.start()
         result = thread_with_return_value.join(timeout=timeout)
         if result is None:
+            is_timeout = True
             current_match_line = self.match_line
             self.match_line = []
-            return current_match_line
-        return result
+            return current_match_line, is_timeout
+        return result, is_timeout
 
     def go_to_end(self, file: object) -> None:
         try:

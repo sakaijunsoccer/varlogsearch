@@ -71,7 +71,7 @@ def event_search() -> flask.Response:
         return jsonify({"message": "file does not exist"}), 404
 
     event_log_file = EventLogFile(full_filepath)
-    match_line = event_log_file.find_event(keywords, limit)
+    match_line, is_timeout = event_log_file.find_event(keywords, limit)
     logger.info(
         {
             "action": "event_search",
@@ -79,8 +79,12 @@ def event_search() -> flask.Response:
             "keywrods": keywords,
             "limit": limit,
             "lines": match_line,
+            "timeout": is_timeout,
         }
     )
 
     json_search_result = {"events": match_line}
-    return jsonify(json_search_result)
+    if is_timeout:
+        json_search_result['message'] = 'timeout'
+        return jsonify(json_search_result), 400
+    return jsonify(json_search_result), 200
