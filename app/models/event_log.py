@@ -88,12 +88,15 @@ class EventLogFile(EventRunThread):
         if type(keywords) is not list:
             raise ValueError
 
+        # TODO (sakaijunsoccer) Implement AND searche
+        keyword = keywords[0].strip()
+        if not keyword:
+            raise ValueError
+
         match_count, match, line = 0, False, ""
         match = False
         line = ""
 
-        # TODO (sakaijunsoccer) Create AND/OR with text/keyword
-        keyword = keywords[0]
         reverted_keyword = keyword[::-1]
         len_keyword = len(reverted_keyword)
 
@@ -178,8 +181,12 @@ class EventLogFileBuffer(EventRunThread):
     def search(self, keywords: list, limit=DEFAULT_FIND_EVENT_NUM) -> list:
         if type(keywords) is not list:
             raise ValueError
-        # TODO (sakaijunsoccer) Implementing AND OR for multiple searches
-        keyword = keywords[0]
+
+        # TODO (sakaijunsoccer) Implement AND searche
+        keyword = keywords[0].strip()
+        if not keyword:
+            raise ValueError
+
         len_keyword = len(keyword)
         last_char_for_keyword = keyword[-1]
         while len(self.match_line) < limit:
@@ -216,7 +223,7 @@ class EventLogFileBuffer(EventRunThread):
                     self.move_cursor_pos(-(len_keyword - 1))
 
                     if self.find_and_move_line_break_or_start():
-                        line = self._buffer[self.pos+1:]
+                        line = self._buffer[self.pos + 1 :]
                     else:
                         line = self._buffer[:]
 

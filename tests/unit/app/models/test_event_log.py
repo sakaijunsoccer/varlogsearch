@@ -117,6 +117,16 @@ class TestEventLogFile(unittest.TestCase):
             result,
         )
 
+    def test_search_find_two_keyword_in_one_line(self):
+        self.write_data("some test test 1\nsome test test 2\nsome test 3\n")
+        event_log_file = EventLogFileBuffer(self.tempfile.name)
+        limit = 100
+        result = event_log_file.search(["test"], limit)
+        self.assertEqual(
+            ["some test 3", "some test test 2", "some test test 1"],
+            result,
+        )
+
     def test_search_text_search(self):
         self.write_data("some test 1\nHello. This is text. Bye.\nsome test 3\n")
         event_log_file = EventLogFile(self.tempfile.name)
@@ -128,6 +138,30 @@ class TestEventLogFile(unittest.TestCase):
             ],
             result,
         )
+
+    def test_search_find_one_char(self):
+        self.write_data("some test a test\n")
+        event_log_file = EventLogFileBuffer(self.tempfile.name)
+        limit = 100
+        result = event_log_file.search(["a"], limit)
+        self.assertEqual(
+            ['some test a test'],
+            result,
+        )
+
+    def test_search_line_break_empty(self):
+        self.write_data("some test 1\nsome test 2")
+        event_log_file = EventLogFileBuffer(self.tempfile.name)
+        limit = 100
+        with self.assertRaises(ValueError):
+            result = event_log_file.search(["\n"], limit)
+
+    def test_search_space_empty(self):
+        self.write_data("some test 1\nsome test 2")
+        event_log_file = EventLogFileBuffer(self.tempfile.name)
+        limit = 100
+        with self.assertRaises(ValueError):
+            result = event_log_file.search([" "], limit)
 
     def test_search_does_not_match(self):
         self.write_data("abc def hij\n")
@@ -255,6 +289,16 @@ class TestEventLogFileBuffer(unittest.TestCase):
             result,
         )
 
+    def test_search_find_two_keyword_in_one_line(self):
+        self.write_data("some test test 1\nsome test test 2\nsome test 3\n")
+        event_log_file = EventLogFileBuffer(self.tempfile.name)
+        limit = 100
+        result = event_log_file.search(["test"], limit)
+        self.assertEqual(
+            ["some test 3", "some test test 2", "some test test 1"],
+            result,
+        )
+
     def test_search_text_search(self):
         self.write_data("some test 1\nHello. This is text. Bye.\nsome test 3\n")
         event_log_file = EventLogFileBuffer(self.tempfile.name)
@@ -277,6 +321,30 @@ class TestEventLogFileBuffer(unittest.TestCase):
             ],
             result,
         )
+
+    def test_search_find_one_char(self):
+        self.write_data("some test a test\n")
+        event_log_file = EventLogFileBuffer(self.tempfile.name)
+        limit = 100
+        result = event_log_file.search(["a"], limit)
+        self.assertEqual(
+            ['some test a test'],
+            result,
+        )
+
+    def test_search_line_break_empty(self):
+        self.write_data("some test 1\nsome test 2")
+        event_log_file = EventLogFileBuffer(self.tempfile.name)
+        limit = 100
+        with self.assertRaises(ValueError):
+            result = event_log_file.search(["\n"], limit)
+
+    def test_search_space_empty(self):
+        self.write_data("some test 1\nsome test 2")
+        event_log_file = EventLogFileBuffer(self.tempfile.name)
+        limit = 100
+        with self.assertRaises(ValueError):
+            result = event_log_file.search([" "], limit)
 
     def test_search_does_not_match(self):
         self.write_data("abc def hij\n")
