@@ -116,10 +116,11 @@ class EventLogFile(EventRunThread):
                 continue
 
             line = c + line
-            if match_count < len_keyword and c == reverted_keyword[match_count]:
+            if c == reverted_keyword[match_count]:
                 match_count += 1
                 if match_count == len_keyword:
                     match = True
+                    match_count = 0
             else:
                 match_count = 0
         return self.match_line
@@ -194,14 +195,14 @@ class EventLogFileBuffer(EventRunThread):
                 if not self.read_buffer():
                     return self.match_line
 
-            found = False
+            is_match_last_keyword_char = False
             while self.pos > 0:
                 self.move_cursor_pos(-1)
                 c = self.get_char()
                 if c == os.linesep:
                     self.trim()
                 elif c == last_char_for_keyword:
-                    found = True
+                    is_match_last_keyword_char = True
                     break
 
                 if self.pos == 0:
@@ -212,14 +213,11 @@ class EventLogFileBuffer(EventRunThread):
             if self.pos < len_keyword:
                 self.read_buffer()
 
-            if found:
+            if is_match_last_keyword_char:
                 pos_back_keyword = self.pos - (len_keyword - 1)
-                if (
-                    self._buffer.find(
-                        keyword, pos_back_keyword, pos_back_keyword + len_keyword
-                    )
-                    == pos_back_keyword
-                ):
+                is_match_word = self._buffer.find(
+                    keyword, pos_back_keyword, pos_back_keyword + len_keyword) == pos_back_keyword
+                if is_match_word:
                     self.move_cursor_pos(-(len_keyword - 1))
 
                     if self.find_and_move_line_break_or_start():
