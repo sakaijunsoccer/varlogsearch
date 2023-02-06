@@ -88,7 +88,7 @@ class EventLogFile(EventRunThread):
         if type(keywords) is not list:
             raise ValueError
 
-        # TODO (sakaijunsoccer) Implement AND searche
+        # TODO (sakaijunsoccer) Implement AND search
         keyword = keywords[0].strip()
         if not keyword:
             raise ValueError
@@ -183,7 +183,7 @@ class EventLogFileBuffer(EventRunThread):
         if type(keywords) is not list:
             raise ValueError
 
-        # TODO (sakaijunsoccer) Implement AND searche
+        # TODO (sakaijunsoccer) Implement AND search
         keyword = keywords[0].strip()
         if not keyword:
             raise ValueError
