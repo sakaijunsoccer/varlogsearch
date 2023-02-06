@@ -20,10 +20,11 @@ black:
 isort:
 	isort .
 
+pretty: isort black
+
 clean:
 	find . | grep -E "(/__pycache__$|\.pyc$|\.pyo$)" | xargs rm -rf
 	rm logs/*.log
 	rm -rf .pytest_cache
 
-pretty: isort black
 

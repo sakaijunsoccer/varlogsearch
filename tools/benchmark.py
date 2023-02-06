@@ -34,7 +34,7 @@ def inspect_search(filename):
     end_time = time.time()
     assert is_timeout is False
     print(
-        f"time: {end_time-start_time}, found: {len(result3)} buffer_size={buffer_size}"
+        f"time: {end_time-start_time} found: {len(result3)} buffer_size={buffer_size}"
     )
 
     assert result1 == result2 == result3
