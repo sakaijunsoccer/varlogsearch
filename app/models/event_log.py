@@ -121,32 +121,6 @@ class EventLogFile(EventRunThread):
                 match_count = 0
         return self.match_line
 
-    def find_event(
-        self,
-        keywords: list,
-        limit: int = DEFAULT_FIND_EVENT_NUM,
-        timeout: int = DEFAULT_FIND_TIMEOUT,
-    ) -> (list, bool):
-        self.clear_match_line()
-        is_timeout = False
-
-        # TODO (sakaijunsoccer) Replace professional asyc service such as SQS or celery
-        thread_with_return_value = ThreadWithReturnValue(
-            target=self.search,
-            args=(
-                keywords,
-                limit,
-            ),
-        )
-        thread_with_return_value.start()
-        result = thread_with_return_value.join(timeout=timeout)
-        if result is None:
-            is_timeout = True
-            cursor_match_line = self.match_line
-            self.clear_match_line()
-            return cursor_match_line, is_timeout
-        return result, is_timeout
-
 
 class EventLogFileBuffer(EventRunThread):
     def __init__(self, filename: str, buffer_size: int = DEFAULT_BUFFER_SIZE) -> None:
@@ -183,8 +157,8 @@ class EventLogFileBuffer(EventRunThread):
     def pos(self) -> int:
         return self._cursor_pos - self._offset
 
-    def move_cursor_pos(self, num: int) -> None:
-        self._cursor_pos -= num
+    def move_cursor_pos(self, num: int = -1) -> None:
+        self._cursor_pos += num
 
     def get_char(self) -> str:
         return self._buffer[self.pos]
@@ -192,13 +166,13 @@ class EventLogFileBuffer(EventRunThread):
     def trim(self) -> None:
         self._buffer = self._buffer[: self.pos + 1]
 
-    def find_line_break_or_end(self) -> bool:
+    def find_and_move_line_break_or_start(self) -> bool:
         while self.get_char() != os.linesep:
             if self.pos == 0:
                 if self._offset == 0:
                     return False
                 self.read_buffer()
-            self.move_cursor_pos(1)
+            self.move_cursor_pos(-1)
         return True
 
     def search(self, keywords: list, limit=DEFAULT_FIND_EVENT_NUM) -> list:
@@ -215,7 +189,7 @@ class EventLogFileBuffer(EventRunThread):
 
             found = False
             while self.pos > 0:
-                self.move_cursor_pos(1)
+                self.move_cursor_pos(-1)
                 c = self.get_char()
                 if c == os.linesep:
                     self.trim()
@@ -232,19 +206,19 @@ class EventLogFileBuffer(EventRunThread):
                 self.read_buffer()
 
             if found:
-                pos_plus_keyword = self.pos - (len_keyword - 1)
+                pos_back_keyword = self.pos - (len_keyword - 1)
                 if (
                     self._buffer.find(
-                        keyword, pos_plus_keyword, pos_plus_keyword + len_keyword
+                        keyword, pos_back_keyword, pos_back_keyword + len_keyword
                     )
-                    == pos_plus_keyword
+                    == pos_back_keyword
                 ):
-                    self.move_cursor_pos(len_keyword - 1)
+                    self.move_cursor_pos(-(len_keyword - 1))
 
-                    if self.find_line_break_or_end():
-                        line = self._buffer[self.pos + 1 :]
+                    if self.find_and_move_line_break_or_start():
+                        line = self._buffer[self.pos+1:]
                     else:
-                        line = self._buffer[self.pos :]
+                        line = self._buffer[:]
 
                     if line[-1] == os.linesep:
                         line = line[:-1]
@@ -252,5 +226,5 @@ class EventLogFileBuffer(EventRunThread):
                     self.add_match_line(line)
                     self.trim()
                 else:
-                    self.move_cursor_pos(1)
+                    self.move_cursor_pos(-1)
         return self.match_line
