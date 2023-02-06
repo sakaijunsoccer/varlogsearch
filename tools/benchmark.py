@@ -1,7 +1,7 @@
 import argparse
 import time
 
-from app.models.event_log import EventLogFile, EventLogFileBuffer
+from app.models.event_log import EventLogFile, EventLogFileBuffer, DEFAULT_BUFFER_SIZE
 
 DEFAULT_FILE_LOCATION = "/var/log/random.log"
 
@@ -10,27 +10,26 @@ def inspect_search(filename):
     start_time = time.time()
     event_log_file = EventLogFile(filename)
     result1, is_timeout = event_log_file.find_event(["test"], limit=10000, timeout=10)
-    assert is_timeout is False
     end_time = time.time()
-    print(f"time: {end_time-start_time}, found: {len(result1)}")
+    assert is_timeout is False
+    print(f"time: {end_time-start_time} found: {len(result1)} no buffer")
 
     start_time = time.time()
     event_log_file_buffer = EventLogFileBuffer(filename)
     result2, is_timeout = event_log_file_buffer.find_event(["test"], limit=10000, timeout=10)
-    assert is_timeout is False
     end_time = time.time()
-    print(f"time: {end_time-start_time}, found: {len(result2)}")
+    assert is_timeout is False
+    print(f"time: {end_time-start_time} found: {len(result2)} buffer_size={DEFAULT_BUFFER_SIZE}")
 
-    assert result1 == result2
-
+    buffer_size = 4 * 1024
     start_time = time.time()
     event_log_file_buffer = EventLogFileBuffer(filename, buffer_size=4*1024)
     result3, is_timeout = event_log_file_buffer.find_event(["test"], limit=10000, timeout=10)
-    assert is_timeout is False
     end_time = time.time()
-    print(f"time: {end_time-start_time}, found: {len(result3)}")
+    assert is_timeout is False
+    print(f"time: {end_time-start_time}, found: {len(result3)} buffer_size={buffer_size}")
 
-    assert result1 == result3
+    assert result1 == result2 == result3
 
 
 if __name__ == "__main__":
