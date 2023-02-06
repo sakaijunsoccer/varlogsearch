@@ -41,7 +41,11 @@ class EventRunThread(object):
         self.clear_match_line()
         is_timeout = False
         thread_with_return_value = ThreadWithReturnValue(
-            target=self.search, args=(keywords, limit,)
+            target=self.search,
+            args=(
+                keywords,
+                limit,
+            ),
         )
         thread_with_return_value.start()
         result = thread_with_return_value.join(timeout=timeout)
@@ -65,7 +69,7 @@ class EventLogFile(EventRunThread):
     def __del__(self) -> None:
         os.close(self.file_descriptor)
 
-    def move_absolute_pos(self, pos: int) -> None:
+    def move_cursor_pos(self, pos: int) -> None:
         os.lseek(self.file_descriptor, pos, os.SEEK_SET)
 
     def get_char(self, length: int = 1) -> str:
@@ -76,7 +80,7 @@ class EventLogFile(EventRunThread):
     def is_begin(self) -> bool:
         return self._offset <= 0
 
-    def move_absolute_pos(self, num: int = -1) -> None:
+    def move_cursor_pos(self, num: int = -1) -> None:
         self._offset += num
         os.lseek(self.file_descriptor, self._offset, os.SEEK_SET)
 
@@ -99,7 +103,7 @@ class EventLogFile(EventRunThread):
                     self.add_match_line(line)
                 break
 
-            self.move_absolute_pos(-1)
+            self.move_cursor_pos(-1)
 
             c = self.get_char(1)
             if c == os.linesep:
@@ -123,12 +127,17 @@ class EventLogFile(EventRunThread):
         limit: int = DEFAULT_FIND_EVENT_NUM,
         timeout: int = DEFAULT_FIND_TIMEOUT,
     ) -> (list, bool):
-
         self.clear_match_line()
         is_timeout = False
 
         # TODO (sakaijunsoccer) Replace professional asyc service such as SQS or celery
-        thread_with_return_value = ThreadWithReturnValue(target=self.search, args=(keywords, limit,))
+        thread_with_return_value = ThreadWithReturnValue(
+            target=self.search,
+            args=(
+                keywords,
+                limit,
+            ),
+        )
         thread_with_return_value.start()
         result = thread_with_return_value.join(timeout=timeout)
         if result is None:
@@ -174,7 +183,7 @@ class EventLogFileBuffer(EventRunThread):
     def pos(self) -> int:
         return self._cursor_pos - self._offset
 
-    def move_absolute_pos(self, num: int) -> None:
+    def move_cursor_pos(self, num: int) -> None:
         self._cursor_pos -= num
 
     def get_char(self) -> str:
@@ -189,7 +198,7 @@ class EventLogFileBuffer(EventRunThread):
                 if self._offset == 0:
                     return False
                 self.read_buffer()
-            self.move_absolute_pos(1)
+            self.move_cursor_pos(1)
         return True
 
     def search(self, keywords: list, limit=DEFAULT_FIND_EVENT_NUM) -> list:
@@ -206,7 +215,7 @@ class EventLogFileBuffer(EventRunThread):
 
             found = False
             while self.pos > 0:
-                self.move_absolute_pos(1)
+                self.move_cursor_pos(1)
                 c = self.get_char()
                 if c == os.linesep:
                     self.trim()
@@ -230,7 +239,7 @@ class EventLogFileBuffer(EventRunThread):
                     )
                     == pos_plus_keyword
                 ):
-                    self.move_absolute_pos(len_keyword - 1)
+                    self.move_cursor_pos(len_keyword - 1)
 
                     if self.find_line_break_or_end():
                         line = self._buffer[self.pos + 1 :]
@@ -243,5 +252,5 @@ class EventLogFileBuffer(EventRunThread):
                     self.add_match_line(line)
                     self.trim()
                 else:
-                    self.move_absolute_pos(1)
+                    self.move_cursor_pos(1)
         return self.match_line
