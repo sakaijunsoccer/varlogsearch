@@ -66,7 +66,7 @@ class TestEventLogFile(unittest.TestCase):
             result,
         )
 
-    def test_searchmulti_line_limit(self):
+    def test_search_multi_line_limit(self):
         self.write_data("some test 1\nsome test 2\nsome test 3\n")
         event_log_file = EventLogFile(self.tempfile.name)
         limit = 1

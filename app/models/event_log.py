@@ -64,12 +64,12 @@ class EventLogFile(EventRunThread):
         self.file_descriptor = os.open(self.filename, os.O_RDONLY)
         self.file_stat = os.fstat(self.file_descriptor)
         self._offset = self.file_stat.st_size
-        self._cursor_pos = self._offset
+        self._cursor = self._offset
 
     def __del__(self) -> None:
         os.close(self.file_descriptor)
 
-    def move_cursor_pos(self, pos: int) -> None:
+    def move_cursor(self, pos: int) -> None:
         os.lseek(self.file_descriptor, pos, os.SEEK_SET)
 
     def get_char(self, length: int = 1) -> str:
@@ -80,7 +80,7 @@ class EventLogFile(EventRunThread):
     def is_begin(self) -> bool:
         return self._offset <= 0
 
-    def move_cursor_pos(self, num: int = -1) -> None:
+    def move_cursor(self, num: int = -1) -> None:
         self._offset += num
         os.lseek(self.file_descriptor, self._offset, os.SEEK_SET)
 
@@ -106,7 +106,7 @@ class EventLogFile(EventRunThread):
                     self.add_match_line(line)
                 break
 
-            self.move_cursor_pos(-1)
+            self.move_cursor(-1)
 
             c = self.get_char(1)
             if c == os.linesep:
@@ -133,7 +133,7 @@ class EventLogFileBuffer(EventRunThread):
         self.file_descriptor = os.open(self.filename, os.O_RDONLY)
         self.file_stat = os.fstat(self.file_descriptor)
         self._offset = self.file_stat.st_size
-        self._cursor_pos = self._offset
+        self._cursor = self._offset
 
         self._buffer = ""
         self._buffer_size = buffer_size
@@ -159,10 +159,10 @@ class EventLogFileBuffer(EventRunThread):
 
     @property
     def pos(self) -> int:
-        return self._cursor_pos - self._offset
+        return self._cursor - self._offset
 
-    def move_cursor_pos(self, num: int = -1) -> None:
-        self._cursor_pos += num
+    def move_cursor(self, num: int = -1) -> None:
+        self._cursor += num
 
     def get_char(self) -> str:
         return self._buffer[self.pos]
@@ -176,7 +176,7 @@ class EventLogFileBuffer(EventRunThread):
                 if self._offset == 0:
                     return False
                 self.read_buffer()
-            self.move_cursor_pos(-1)
+            self.move_cursor(-1)
         return True
 
     def search(self, keywords: list, limit=DEFAULT_FIND_EVENT_NUM) -> list:
@@ -189,7 +189,7 @@ class EventLogFileBuffer(EventRunThread):
             raise ValueError
 
         len_keyword = len(keyword)
-        last_char_for_keyword = keyword[-1]
+        last_char_of_keyword = keyword[-1]
         while len(self.match_line) < limit:
             if self.pos < len_keyword:
                 if not self.read_buffer():
@@ -197,11 +197,11 @@ class EventLogFileBuffer(EventRunThread):
 
             is_match_last_keyword_char = False
             while self.pos > 0:
-                self.move_cursor_pos(-1)
+                self.move_cursor(-1)
                 c = self.get_char()
                 if c == os.linesep:
                     self.trim()
-                elif c == last_char_for_keyword:
+                elif c == last_char_of_keyword:
                     is_match_last_keyword_char = True
                     break
 
@@ -214,11 +214,11 @@ class EventLogFileBuffer(EventRunThread):
                 self.read_buffer()
 
             if is_match_last_keyword_char:
-                pos_back_keyword = self.pos - (len_keyword - 1)
+                back_len_keyword = self.pos - (len_keyword - 1)
                 is_match_word = self._buffer.find(
-                    keyword, pos_back_keyword, pos_back_keyword + len_keyword) == pos_back_keyword
+                    keyword, back_len_keyword, back_len_keyword + len_keyword) == back_len_keyword
                 if is_match_word:
-                    self.move_cursor_pos(-(len_keyword - 1))
+                    self.move_cursor(-(len_keyword - 1))
 
                     if self.find_and_move_line_break_or_start():
                         line = self._buffer[self.pos + 1 :]
@@ -231,5 +231,5 @@ class EventLogFileBuffer(EventRunThread):
                     self.add_match_line(line)
                     self.trim()
                 else:
-                    self.move_cursor_pos(-1)
+                    self.move_cursor(-1)
         return self.match_line
