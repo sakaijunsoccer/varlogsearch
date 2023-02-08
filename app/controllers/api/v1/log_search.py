@@ -4,7 +4,7 @@ import os.path
 import flask
 from flask import Blueprint, jsonify, request
 
-from app.models.event_log import EventLogFile, EventLogFileBuffer
+from app.models.event_log import EventLogFileBuffer
 from configs import settings
 
 DEFAULT_SEARCH_LOG_LINE = 10
