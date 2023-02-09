@@ -76,11 +76,9 @@ $ python main.py
 
 ## API Docs
 Please check the Swagger URL below for the API.
-```
 http://localhost:8080/docs/api/v1/
-```
-Example of postman config for using API
-[Postman Config](https://github.com/sakaijunsoccer/varlogsearch/blob/main/tools/varlogsearch.postman_collection.json)
+
+Example of Postman config is [here](tools/varlogsearch.postman_collection.json "s/varlogsearch.postman_collection.json")
 
 ## Frontend
 The basic UI is in the repository below, so if you want to access this server from the UI, please set up a front-end server according to the README in the repository below.
