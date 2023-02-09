@@ -14,24 +14,34 @@ def inspect_search(filename):
     end_time = time.time()
     print(f"time: {end_time-start_time} found: {len(result1)} no buffer")
 
+    buffer_size = 4 * 1024
     start_time = time.time()
-    event_log_file_buffer = EventLogFileBuffer(filename)
+    event_log_file_buffer = EventLogFileBuffer(filename, buffer_size=buffer_size)
     result2 = event_log_file_buffer.search(["test"], limit=10000)
     end_time = time.time()
     print(
-        f"time: {end_time-start_time} found: {len(result2)} buffer_size={DEFAULT_BUFFER_SIZE}"
+        f"time: {end_time-start_time} found: {len(result2)} buffer_size={buffer_size}"
     )
 
-    buffer_size = 4 * 1024
+    buffer_size = 16 * 1024
     start_time = time.time()
-    event_log_file_buffer = EventLogFileBuffer(filename, buffer_size=4 * 1024)
+    event_log_file_buffer = EventLogFileBuffer(filename, buffer_size=buffer_size)
     result3 = event_log_file_buffer.search(["test"], limit=10000)
     end_time = time.time()
     print(
         f"time: {end_time-start_time} found: {len(result3)} buffer_size={buffer_size}"
     )
 
-    assert result1 == result2 == result3
+    buffer_size = 64 * 1024
+    start_time = time.time()
+    event_log_file_buffer = EventLogFileBuffer(filename, buffer_size=buffer_size)
+    result4 = event_log_file_buffer.search(["test"], limit=10000)
+    end_time = time.time()
+    print(
+        f"time: {end_time-start_time} found: {len(result4)} buffer_size={buffer_size}"
+    )
+
+    assert result1 == result2 == result3 == result4
 
 
 if __name__ == "__main__":

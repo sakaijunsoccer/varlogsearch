@@ -7,7 +7,7 @@ from utils.process import ThreadWithReturnValue
 
 DEFAULT_FIND_EVENT_NUM = 10
 DEFAULT_FIND_TIMEOUT = 5 * 60
-DEFAULT_BUFFER_SIZE = 16
+DEFAULT_BUFFER_SIZE = 16 * 1024
 
 
 logger = logging.getLogger(__name__)
