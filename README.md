@@ -24,14 +24,14 @@ port = 8080
 
 #### Run on local
 ```
-python main.py
+$ python main.py
 ```
 
 ## How to develop
 
 #### Install dev package
 ```
-$ install_dev_package
+$ make install_dev_package
 ```
 
 #### Make mock log file
