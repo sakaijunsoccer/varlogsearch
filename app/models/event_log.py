@@ -117,7 +117,6 @@ class EventLogFile(EventRunThread):
             line = c + line
             if match:
                 continue
-
             if c == reverted_keyword[match_count]:
                 match_count += 1
                 if match_count == len_keyword:
@@ -217,7 +216,10 @@ class EventLogFileBuffer(EventRunThread):
 
             if is_match_last_keyword_char:
                 back_len_keyword = self.pos - (len_keyword - 1)
-                is_match_word = self._buffer[back_len_keyword:back_len_keyword + len_keyword] == keyword
+                # Works with either
+                # is_match_word = self._buffer[back_len_keyword:back_len_keyword + len_keyword] == keyword
+                is_match_word = self._buffer.find(
+                    keyword, back_len_keyword, back_len_keyword + len_keyword) == back_len_keyword
                 if is_match_word:
                     self.move_cursor(-(len_keyword - 1))
 
