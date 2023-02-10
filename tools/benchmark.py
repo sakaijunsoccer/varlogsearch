@@ -6,7 +6,7 @@ from app.models.event_log import DEFAULT_BUFFER_SIZE, EventLogFile, EventLogFile
 DEFAULT_FILE_LOCATION = "/var/log/random.log"
 
 
-def inspect_search(filename):
+def benchmark_search(filename):
     start_time = time.time()
 
     event_log_file = EventLogFile(filename)
@@ -53,4 +53,4 @@ if __name__ == "__main__":
         help="an string for generating file location",
     )
     args = parser.parse_args()
-    inspect_search(args.filename)
+    benchmark_search(args.filename)
