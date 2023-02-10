@@ -64,7 +64,6 @@ class EventLogFile(EventRunThread):
         self.file_descriptor = os.open(self.filename, os.O_RDONLY)
         self.file_stat = os.fstat(self.file_descriptor)
         self._offset = self.file_stat.st_size
-        self._cursor = self._offset
 
     def __del__(self) -> None:
         os.close(self.file_descriptor)
@@ -88,7 +87,7 @@ class EventLogFile(EventRunThread):
         if type(keywords) is not list:
             raise ValueError
 
-        # TODO (sakaijunsoccer) Implement AND search
+        # TODO (sakaijunsoccer) Implement AND search. Use one keyword for now.
         keyword = keywords[0].strip()
         if not keyword:
             raise ValueError
@@ -107,8 +106,8 @@ class EventLogFile(EventRunThread):
                 break
 
             self.move_cursor(-1)
-
             c = self.get_char(1)
+
             if c == os.linesep:
                 if match:
                     self.add_match_line(line)
@@ -116,6 +115,9 @@ class EventLogFile(EventRunThread):
                 continue
 
             line = c + line
+            if match:
+                continue
+
             if c == reverted_keyword[match_count]:
                 match_count += 1
                 if match_count == len_keyword:
@@ -215,13 +217,12 @@ class EventLogFileBuffer(EventRunThread):
 
             if is_match_last_keyword_char:
                 back_len_keyword = self.pos - (len_keyword - 1)
-                is_match_word = self._buffer.find(
-                    keyword, back_len_keyword, back_len_keyword + len_keyword) == back_len_keyword
+                is_match_word = self._buffer[back_len_keyword:back_len_keyword + len_keyword] == keyword
                 if is_match_word:
                     self.move_cursor(-(len_keyword - 1))
 
                     if self.find_and_move_line_break_or_start():
-                        line = self._buffer[self.pos + 1 :]
+                        line = self._buffer[self.pos + 1:]
                     else:
                         line = self._buffer[:]
 
