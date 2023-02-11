@@ -88,10 +88,7 @@ class EventLogFile(EventRunThread):
             raise ValueError
 
         # TODO (sakaijunsoccer) Implement AND search. Use one keyword for now.
-        keyword = keywords[0].strip()
-        if not keyword:
-            raise ValueError
-
+        keyword = keywords[0].strip() if keywords else ''
         match_count, match, line = 0, False, ""
         match = False
         line = ""
@@ -101,7 +98,7 @@ class EventLogFile(EventRunThread):
 
         while len(self.match_line) < limit:
             if self.is_begin:
-                if match:
+                if match or keyword == "":
                     self.add_match_line(line)
                 break
 
@@ -109,12 +106,15 @@ class EventLogFile(EventRunThread):
             c = self.get_char(1)
 
             if c == os.linesep:
-                if match:
+                if match or keyword == "":
                     self.add_match_line(line)
                 match, line = False, ""
                 continue
 
             line = c + line
+            if keyword == "":
+                continue
+
             if match:
                 continue
             if c == reverted_keyword[match_count]:
@@ -149,7 +149,7 @@ class EventLogFileBuffer(EventRunThread):
         else:
             num = self._buffer_size
 
-        if num == 0:
+        if num <= 0:
             return False
 
         self._offset -= num
@@ -173,32 +173,50 @@ class EventLogFileBuffer(EventRunThread):
 
     def find_and_move_line_break_or_start(self) -> bool:
         while self.get_char() != os.linesep:
-            if self.pos == 0:
-                if self._offset == 0:
+            if self.pos <= 0:
+                if self._offset <= 0:
                     return False
                 self.read_buffer()
             self.move_cursor(-1)
         return True
+
+    def save_line(self):
+        if self.find_and_move_line_break_or_start():
+            line = self._buffer[self.pos + 1:]
+        else:
+            line = self._buffer[:]
+
+        if line[-1] == os.linesep:
+            line = line[:-1]
+
+        if line:
+            self.add_match_line(line)
 
     def search(self, keywords: list, limit=DEFAULT_FIND_EVENT_NUM) -> list:
         if type(keywords) is not list:
             raise ValueError
 
         # TODO (sakaijunsoccer) Implement AND search
-        keyword = keywords[0].strip()
-        if not keyword:
-            raise ValueError
-
+        keyword = keywords[0].strip() if keywords else ''
         len_keyword = len(keyword)
-        last_char_of_keyword = keyword[-1]
+        last_char_of_keyword = ''
+        if len_keyword:
+            last_char_of_keyword = keyword[-1]
+
         while len(self.match_line) < limit:
-            if self.pos < len_keyword:
+            if self.pos <= len_keyword:
                 if not self.read_buffer():
                     return self.match_line
 
             is_match_last_keyword_char = False
             while self.pos > 0:
                 self.move_cursor(-1)
+
+                if len_keyword == 0:
+                    self.save_line()
+                    self.trim()
+                    break
+
                 c = self.get_char()
                 if c == os.linesep:
                     self.trim()
@@ -206,8 +224,8 @@ class EventLogFileBuffer(EventRunThread):
                     is_match_last_keyword_char = True
                     break
 
-                if self.pos == 0:
-                    if self._offset == 0:
+                if self.pos <= 0:
+                    if self._offset <= 0:
                         return self.match_line
                     self.read_buffer()
 
@@ -222,16 +240,7 @@ class EventLogFileBuffer(EventRunThread):
                     keyword, back_len_keyword, back_len_keyword + len_keyword) == back_len_keyword
                 if is_match_word:
                     self.move_cursor(-(len_keyword - 1))
-
-                    if self.find_and_move_line_break_or_start():
-                        line = self._buffer[self.pos + 1:]
-                    else:
-                        line = self._buffer[:]
-
-                    if line[-1] == os.linesep:
-                        line = line[:-1]
-
-                    self.add_match_line(line)
+                    self.save_line()
                     self.trim()
                 else:
                     self.move_cursor(-1)
