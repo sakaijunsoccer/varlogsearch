@@ -36,7 +36,7 @@ def make_random_log(
                     keyword if random.randint(1, occurrences) == occurrences else ""
                 )
                 log_line = f"{now} {random_string} {empty_or_keyword} {random_string} {os.linesep}"
-                print(log_line)
+                print(log_line, end='')
                 file.write(log_line)
             file.flush()
 
