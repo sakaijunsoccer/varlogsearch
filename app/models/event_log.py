@@ -186,7 +186,7 @@ class EventLogFileBuffer(EventRunThread):
         else:
             line = self._buffer[:]
 
-        if line[-1] == os.linesep:
+        if line and line[-1] == os.linesep:
             line = line[:-1]
 
         if line:

@@ -54,7 +54,10 @@ def event_search() -> flask.Response:
     keywords = request.args.get("keywords")
     if not keywords:
         return jsonify({"errorMessage": "keywords is required"}), 400
-    keywords = keywords.split(",")
+    if keywords == "''":
+        keywords = []
+    else:
+        keywords = keywords.split(",")
     limit_str = request.args.get("limit")
     limit = int(limit_str) if limit_str is not None else DEFAULT_SEARCH_LOG_LINE
 
