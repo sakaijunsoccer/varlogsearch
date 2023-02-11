@@ -32,12 +32,12 @@ def make_random_log(
                     random.choice(string.ascii_lowercase + string.ascii_uppercase)
                     for i in range(random.randint(1, 10))
                 )
-                is_keyword = (
+                empty_or_keyword = (
                     keyword if random.randint(1, occurrences) == occurrences else ""
                 )
-                file.write(
-                    f"{now} {random_string} {is_keyword} {random_string} {os.linesep}"
-                )
+                log_line = f"{now} {random_string} {empty_or_keyword} {random_string} {os.linesep}"
+                print(log_line)
+                file.write(log_line)
             file.flush()
 
 
