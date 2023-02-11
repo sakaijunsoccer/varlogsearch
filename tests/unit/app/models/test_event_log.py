@@ -145,7 +145,7 @@ class TestEventLogFile(unittest.TestCase):
         limit = 100
         result = event_log_file.search(["a"], limit)
         self.assertEqual(
-            ['some test a test'],
+            ["some test a test"],
             result,
         )
 
@@ -321,7 +321,7 @@ class TestEventLogFileBuffer(unittest.TestCase):
         limit = 100
         result = event_log_file.search(["a"], limit)
         self.assertEqual(
-            ['some test a test'],
+            ["some test a test"],
             result,
         )
 
@@ -331,7 +331,7 @@ class TestEventLogFileBuffer(unittest.TestCase):
         limit = 100
         result = event_log_file.search([""], limit)
         self.assertEqual(
-            ['some test 2', 'some test 1'],
+            ["some test 2", "some test 1"],
             result,
         )
 

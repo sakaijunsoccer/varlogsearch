@@ -88,7 +88,7 @@ class EventLogFile(EventRunThread):
             raise ValueError
 
         # TODO (sakaijunsoccer) Implement AND search. Use one keyword for now.
-        keyword = keywords[0].strip() if keywords else ''
+        keyword = keywords[0].strip() if keywords else ""
         match_count, match, line = 0, False, ""
         match = False
         line = ""
@@ -182,7 +182,7 @@ class EventLogFileBuffer(EventRunThread):
 
     def save_line(self):
         if self.find_and_move_line_break_or_start():
-            line = self._buffer[self.pos + 1:]
+            line = self._buffer[self.pos + 1 :]
         else:
             line = self._buffer[:]
 
@@ -197,9 +197,9 @@ class EventLogFileBuffer(EventRunThread):
             raise ValueError
 
         # TODO (sakaijunsoccer) Implement AND search
-        keyword = keywords[0].strip() if keywords else ''
+        keyword = keywords[0].strip() if keywords else ""
         len_keyword = len(keyword)
-        last_char_of_keyword = ''
+        last_char_of_keyword = ""
         if len_keyword:
             last_char_of_keyword = keyword[-1]
 
@@ -236,8 +236,12 @@ class EventLogFileBuffer(EventRunThread):
                 back_len_keyword = self.pos - (len_keyword - 1)
                 # Works with either
                 # is_match_word = self._buffer[back_len_keyword:back_len_keyword + len_keyword] == keyword
-                is_match_word = self._buffer.find(
-                    keyword, back_len_keyword, back_len_keyword + len_keyword) == back_len_keyword
+                is_match_word = (
+                    self._buffer.find(
+                        keyword, back_len_keyword, back_len_keyword + len_keyword
+                    )
+                    == back_len_keyword
+                )
                 if is_match_word:
                     self.move_cursor(-(len_keyword - 1))
                     self.save_line()
