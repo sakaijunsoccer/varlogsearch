@@ -169,7 +169,7 @@ class EventLogFileBuffer(EventRunThread):
         return self._buffer[self.pos]
 
     def trim(self) -> None:
-        self._buffer = self._buffer[: self.pos + 1]
+        self._buffer = self._buffer[:self.pos+1]
 
     def find_and_move_line_break_or_start(self) -> bool:
         while self.get_char() != os.linesep:
@@ -192,30 +192,36 @@ class EventLogFileBuffer(EventRunThread):
         if line:
             self.add_match_line(line)
 
+    @property
+    def is_begin(self) -> bool:
+        return self.pos <= 0 and self._offset <= 0
+
+    def all_line(self, limit: int) -> list:
+        while len(self.match_line) < limit:
+            if self.pos <= 0:
+                if not self.read_buffer():
+                    return self.match_line
+            self.move_cursor(-1)
+            self.save_line()
+            self.trim()
+        return self.match_line
+
     def search(self, keywords: list, limit=DEFAULT_FIND_EVENT_NUM) -> list:
-        if type(keywords) is not list:
-            raise ValueError
 
         # TODO (sakaijunsoccer) Implement AND search
         keyword = keywords[0].strip() if keywords else ""
         len_keyword = len(keyword)
-        last_char_of_keyword = ""
-        if len_keyword:
-            last_char_of_keyword = keyword[-1]
+        if len_keyword == 0:
+            return self.all_line(limit)
 
+        last_char_of_keyword = keyword[-1]
         while len(self.match_line) < limit:
-            if self.pos <= len_keyword:
-                if not self.read_buffer():
-                    return self.match_line
+            if self.is_begin:
+                return self.match_line
 
             is_match_last_keyword_char = False
             while self.pos > 0:
                 self.move_cursor(-1)
-
-                if len_keyword == 0:
-                    self.save_line()
-                    self.trim()
-                    break
 
                 c = self.get_char()
                 if c == os.linesep:
