@@ -165,6 +165,10 @@ class EventLogFileBuffer(EventRunThread):
     def move_cursor(self, num: int = -1) -> None:
         self._cursor += num
 
+    @property
+    def is_begin(self) -> bool:
+        return self.pos <= 0 and self._offset <= 0
+
     def get_char(self) -> str:
         return self._buffer[self.pos]
 
@@ -191,10 +195,6 @@ class EventLogFileBuffer(EventRunThread):
 
         if line:
             self.add_match_line(line)
-
-    @property
-    def is_begin(self) -> bool:
-        return self.pos <= 0 and self._offset <= 0
 
     def all_line(self, limit: int) -> list:
         while len(self.match_line) < limit:
