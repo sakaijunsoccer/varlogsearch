@@ -68,9 +68,6 @@ class EventLogFile(EventRunThread):
     def __del__(self) -> None:
         os.close(self.file_descriptor)
 
-    def move_cursor(self, pos: int) -> None:
-        os.lseek(self.file_descriptor, pos, os.SEEK_SET)
-
     def get_char(self, length: int = 1) -> str:
         c = os.read(self.file_descriptor, length)
         return c.decode()
@@ -186,7 +183,7 @@ class EventLogFileBuffer(EventRunThread):
 
     def save_line(self):
         if self.find_and_move_line_break_or_start():
-            line = self._buffer[self.pos + 1 :]
+            line = self._buffer[self.pos+1:]
         else:
             line = self._buffer[:]
 
@@ -222,18 +219,12 @@ class EventLogFileBuffer(EventRunThread):
             is_match_last_keyword_char = False
             while self.pos > 0:
                 self.move_cursor(-1)
-
                 c = self.get_char()
                 if c == os.linesep:
                     self.trim()
                 elif c == last_char_of_keyword:
                     is_match_last_keyword_char = True
                     break
-
-                if self.pos <= 0:
-                    if self._offset <= 0:
-                        return self.match_line
-                    self.read_buffer()
 
             if self.pos < len_keyword:
                 self.read_buffer()
